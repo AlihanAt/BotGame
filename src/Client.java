@@ -1,16 +1,22 @@
 import lenz.htw.coshnost.net.NetworkClient;
 import lenz.htw.coshnost.world.GraphNode;
 
-import javax.swing.plaf.basic.BasicDesktopIconUI;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Client implements Runnable {
 
+    private NetworkClient client;
+
+    private BotController einfarbig;
+    private BotController gepunktet;
+    private BotController gestreift;
+
     private int myNumber;
     private GraphNode[] graph;
+
+
 
     private int updateId;
 
@@ -30,107 +36,61 @@ public class Client implements Runnable {
     }
 
     private void start() throws IOException {
-
         writer =  new BufferedWriter(new FileWriter("test.txt"));
 
-        NetworkClient client = new NetworkClient("localhost", "Teamname", "Für Fortnite");
-        graph =  client.getGraph();
+        client = new NetworkClient("localhost", "Teamname", "Für Fortnite");
+        graph = client.getGraph();
         myNumber = client.getMyPlayerNumber();
 
-        if(myNumber == 3){
-            writer.write(graph[10].toString() + "\n");
-            System.out.println(graph[10].toString() + "\n");
-            GraphNode[] nachbarn = graph[10].getNeighbors();
-
-            for (GraphNode node : nachbarn) {
-                writer.write(node.toString() + "\n");
-                System.out.println(node.toString() + "\n");
-            }
-        }
+        einfarbig = new BotController(0);
+        gepunktet = new BotController(1);
+        gestreift = new BotController(2);
 
 
-        BotController einfarbig = new BotController(0);
-        BotController gepunktet = new BotController(1);
-        BotController gestreift = new BotController(2);
+        if(myNumber==0) {
+            gestreift.setPosition(client.getBotPosition(myNumber, 2));
+            gestreift.calcStartNode(graph);
 
-        int tempId;
-        GraphNode tempNode;
-        if(myNumber == 1) {
-            System.out.println("hello, " + myNumber + ", " + graph[10].toString());
-            calcRange(graph[10]);
             while (true) {
-                tempId = client.getMostRecentUpdateId();
-                if (updateId != tempId) {
+                graph = client.getGraph();
+                gestreift.getNewTargetNode(graph, myNumber);
+                changeMoveDirection(gestreift);
+                arrivedAtTarget(gestreift.getPosition(), gestreift.getTargetNode());
 
-                    int x=0,y=0,z = 0;
-
-                    gestreift.setPosition(client.getBotPosition(myNumber, 2));
-                    tempNode = graph[10];
-                    if (gestreift.getPosition()[0] < tempNode.x) {
-                        x=1;
-                    } else if (gestreift.getPosition()[0] > tempNode.x) {
-                        x = -1;
-                    }
-
-                    if(gestreift.getPosition()[1] < tempNode.y){
-                        y=1;
-                    } else if (gestreift.getPosition()[1] > tempNode.y){
-                        y=-1;
-                    }
-
-                    if(gestreift.getPosition()[2] < tempNode.z){
-                        z=1;
-                    } else if (gestreift.getPosition()[2] > tempNode.z){
-                        z=-1;
-                    }
-                    client.changeMoveDirection(2,x,y,z);
-
-                    arrivedAtTarget(client.getBotPosition(myNumber,2), graph[10]);
-
-//                    if(client.getBotPosition(myNumber,2) == graph[10].getPosition()){
-//                        System.out.println("Ziel erreicth!");
-//                    }
-
-//                boolean x = true;
-//                if (x){
-//                    gestreift.setPosition(client.getBotPosition(myNumber, 2));
-//                    tempNode = getNodeByPosition(gestreift.getPosition());
-//                    x= false;
-//                }
-
-//                gestreift.setPosition(client.getBotPosition(myNumber, 2));
-//                tempNode = getNodeByPosition(gestreift.getPosition());
-//                if(tempNode.isBlocked()){
-//                    //änder den weg?
-//                    System.out.println("is blocked");
-//                }
-
-                }
+            }
+        }
+        else {
+            while(true) {
+                float[] dir0 = client.getBotDirection(0);
+                float[] dir1 = client.getBotDirection(1);
+                float[] dir2 = client.getBotDirection(2);
+                client.changeMoveDirection(0, -dir0[0], -dir0[1], -dir0[2]);
+                client.changeMoveDirection(1, -dir1[0], -dir1[1], -dir1[2]);
+                client.changeMoveDirection(2, -dir2[0], -dir2[1], -dir2[2]);
             }
         }
 
-//        client.changeMoveDirection(0, 1,0,0);
-//        client.changeMoveDirection(1, 0,1,0);
-//        client.changeMoveDirection(2, 0,0,1);
-//
-//        float[] pos = graph[0].getPosition();
-//        System.out.println(myNumber + ": " + pos[0] + ", " + pos[1] + ", " + pos[2]);
-//        GraphNode[] neighbors = graph[0].getNeighbors();    //immer genau 5 oder 6 Nachbarn
-//
-//        System.out.println(myNumber + ": " + neighbors[0].x + ", " + neighbors[0].y + ", " + neighbors[0].z);
-//
-//        float[] pos2 = client.getBotPosition(myNumber, 0);
-//        System.out.println(myNumber + ": " + pos2[0] + ", " + pos2[1] + ", " + pos2[2] + "\n");
+    }
+
+    private void changeMoveDirection(BotController bot) {
+        int[] dir = bot.updateMoveDirection();
+        client.changeMoveDirection(bot.getBotNumber(), (float)dir[0], (float) dir[1], (float) dir[2]);
     }
 
     private void arrivedAtTarget(float[] pos, GraphNode node){
-        System.out.println(pos[0] + ", " + pos[1] + ", " + pos[2]);
+        if(node == null)
+            return;
+
+        calcRange(node);
+//        System.out.println(pos[0] + ", " + pos[1] + ", " + pos[2]);
         if((pos[0]>xMin && pos[0]<xMax) && (pos[1]>yMin && pos[1]<yMax) && (pos[2]>zMin && pos[2]<zMax)){
             System.out.println("Ziel erreicht");
+            gestreift.getNewTargetNode(graph, myNumber);
         }
 
     }
 
+    //berechnung der fläche eines Knotens inkl. Nachbarn
     private void calcRange(GraphNode node) {
         GraphNode[] nachbarn = node.getNeighbors();
 
@@ -155,20 +115,9 @@ public class Client implements Runnable {
             else if(n.getZ() > zMax)
                 zMax = n.getZ();
         }
-        System.out.println("X: " + xMin + " - " + xMax +
-                "\nY: " + yMin + " - " + yMax +
-                "\nZ: " + zMin + " - " + zMax);
+//        System.out.println("X: " + xMin + " - " + xMax +
+//                "\nY: " + yMin + " - " + yMax +
+//                "\nZ: " + zMin + " - " + zMax);
     }
 
-    private GraphNode getNodeByPosition(float[] pos) throws IOException {
-
-        for (GraphNode node : graph) {
-//            writer.write(node.toString() + "\n");
-            if(node.x == pos[0] && node.y == pos[1] && node.y == pos[2] ){
-                return node;
-            }
-        }
-
-        return null;
-    }
 }
