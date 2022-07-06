@@ -14,9 +14,7 @@ public class Client implements Runnable {
     private BotController gestreift;
 
     private int myNumber;
-    private GraphNode[] graph;
-
-
+//    private GraphNode[] graph;
 
     private int updateId;
 
@@ -39,55 +37,55 @@ public class Client implements Runnable {
         writer =  new BufferedWriter(new FileWriter("test.txt"));
 
         client = new NetworkClient("localhost", "Teamname", "Für Fortnite");
-        graph = client.getGraph();
+//        graph = client.getGraph();
+        Mapper.graph = client.getGraph();
         myNumber = client.getMyPlayerNumber();
 
         einfarbig = new BotController(0);
         gepunktet = new BotController(1);
         gestreift = new BotController(2);
 
+        int counter = 0;
 
-        if(myNumber==0) {
-            gestreift.setPosition(client.getBotPosition(myNumber, 2));
-            gestreift.calcStartNode(graph);
-
-            while (true) {
-                graph = client.getGraph();
-                gestreift.getNewTargetNode(graph, myNumber);
-                changeMoveDirection(gestreift);
-                arrivedAtTarget(gestreift.getPosition(), gestreift.getTargetNode());
-
-            }
+        if (myNumber == 1){
+            Mapper.graph = client.getGraph();
+            Mapper.createCluster();
+//            Mapper.getAllNodesWithDistance(new float[]{0,1,0}, 0.025f);
         }
-        else {
-            while(true) {
-                float[] dir0 = client.getBotDirection(0);
-                float[] dir1 = client.getBotDirection(1);
-                float[] dir2 = client.getBotDirection(2);
-                client.changeMoveDirection(0, -dir0[0], -dir0[1], -dir0[2]);
-                client.changeMoveDirection(1, -dir1[0], -dir1[1], -dir1[2]);
-                client.changeMoveDirection(2, -dir2[0], -dir2[1], -dir2[2]);
-            }
-        }
+
+
+//        if(myNumber==0) {
+//            gestreift.setPosition(client.getBotPosition(myNumber, 2));
+//            Mapper.calcStartNode(gestreift);
+//
+//            while (true) {
+//                Mapper.setGraph(client.getGraph());
+//                Mapper.getNewTargetNode(gestreift, myNumber);
+//                changeMoveDirection(gestreift);
+//                if(counter == 10000000) {
+//                    Mapper.checkIfArrivedAtTarget(gestreift);
+//                    counter = 0;
+//                }
+//                counter += 1;
+//
+//            }
+//        }
+//        else {
+//            while(true) {
+//                float[] dir0 = client.getBotDirection(0);
+//                float[] dir1 = client.getBotDirection(1);
+//                float[] dir2 = client.getBotDirection(2);
+//                client.changeMoveDirection(0, -dir0[0], -dir0[1], -dir0[2]);
+//                client.changeMoveDirection(1, -dir1[0], -dir1[1], -dir1[2]);
+//                client.changeMoveDirection(2, -dir2[0], -dir2[1], -dir2[2]);
+//            }
+//        }
 
     }
 
     private void changeMoveDirection(BotController bot) {
         int[] dir = bot.updateMoveDirection();
         client.changeMoveDirection(bot.getBotNumber(), (float)dir[0], (float) dir[1], (float) dir[2]);
-    }
-
-    private void arrivedAtTarget(float[] pos, GraphNode node){
-        if(node == null)
-            return;
-
-        calcRange(node);
-//        System.out.println(pos[0] + ", " + pos[1] + ", " + pos[2]);
-        if((pos[0]>xMin && pos[0]<xMax) && (pos[1]>yMin && pos[1]<yMax) && (pos[2]>zMin && pos[2]<zMax)){
-            System.out.println("Ziel erreicht");
-            gestreift.getNewTargetNode(graph, myNumber);
-        }
-
     }
 
     //berechnung der fläche eines Knotens inkl. Nachbarn
