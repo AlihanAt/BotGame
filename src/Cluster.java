@@ -2,16 +2,46 @@ import lenz.htw.coshnost.world.GraphNode;
 
 public class Cluster {
 
-    private float clusterRadius = 0.15f;
-    public static float clusterDistance = 0.25f;
+    private GraphNode center;
+    private GraphNode[] nodes;
+    //-1: none, 0: mine, 1: enemies
+    private int ownership = -1;
 
-    public void startClustering(GraphNode[] graph){
-        float[] np = new float[]{0,1,0};
-        float[] sp = new float[]{0,-1,0};
-
-
-
-
+    public Cluster(GraphNode center){
+        this.center = center;
     }
 
+    public GraphNode getCenter() {
+        return center;
+    }
+
+    public void setCenter(GraphNode center) {
+        this.center = center;
+    }
+
+    public GraphNode[] getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(GraphNode[] nodes) {
+        this.nodes = nodes;
+    }
+
+    public int getOwnership() {
+        return ownership;
+    }
+
+    public void setOwnership(int ownership) {
+        this.ownership = ownership;
+    }
+
+    public boolean isEmpty(){
+        if(center == null)
+            return true;
+
+        if(nodes == null)
+            return true;
+
+        return false;
+    }
 }
