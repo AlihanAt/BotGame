@@ -50,6 +50,12 @@ public class Client implements Runnable {
             Mapper.calcStartNode(gestreift);
 
             while (true) {
+
+                float[] dir0 = client.getBotDirection(0);
+                float[] dir1 = client.getBotDirection(1);
+                client.changeMoveDirection(0, -dir0[0], -dir0[1], -dir0[2]);
+                client.changeMoveDirection(1, -dir1[0], -dir1[1], -dir1[2]);
+
                 Mapper.getNewTargetNode(gestreift, myNumber);
                 changeMoveDirection(gestreift);
                 if(counter >= 10000000) {

@@ -1,9 +1,13 @@
 import lenz.htw.coshnost.world.GraphNode;
 
+import java.util.HashMap;
+
+
 public class Cluster {
 
     private GraphNode center;
-    private GraphNode[] nodes;
+    private HashMap<Integer, GraphNode> nodesMap = new HashMap<>();
+
     //-1: none, 0: mine, 1: enemies
     private int ownership = -1;
 
@@ -19,14 +23,6 @@ public class Cluster {
         this.center = center;
     }
 
-    public GraphNode[] getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(GraphNode[] nodes) {
-        this.nodes = nodes;
-    }
-
     public int getOwnership() {
         return ownership;
     }
@@ -35,13 +31,23 @@ public class Cluster {
         this.ownership = ownership;
     }
 
-    public boolean isEmpty(){
-        if(center == null)
-            return true;
-
-        if(nodes == null)
-            return true;
-
-        return false;
+    public void setNodesMap(int[] indexes, GraphNode[] nodes){
+        for(int i=0; i<nodes.length;i++){
+            nodesMap.put(indexes[i], nodes[i]);
+        }
     }
+
+    public HashMap<Integer, GraphNode> getNodesMap(){
+        return nodesMap;
+    }
+
+//    public boolean isEmpty(){
+//        if(center == null)
+//            return true;
+//
+//        if(nodes == null)
+//            return true;
+//
+//        return false;
+//    }
 }

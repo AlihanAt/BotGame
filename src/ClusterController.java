@@ -1,6 +1,7 @@
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -8,7 +9,7 @@ public class ClusterController {
 
     private final float clusterRadius = 0.30f;
     public static float clusterDistance = 0.50f;
-    private final float clusterCount = 30;
+    private final float clusterCount = 40;
     private final Cluster[] clusters = new Cluster[(int) clusterCount];
 
     public void startClustering(){
@@ -23,24 +24,36 @@ public class ClusterController {
 
         for(int i = 0; i< clusterCount; i++) {
             int randomNumber = r.nextInt(graph.length);
+            if(graph[randomNumber].isBlocked())
+                if(randomNumber==clusterCount)
+                    randomNumber -= 1;
+                else
+                    randomNumber += 1;
+
             clusters[i] = new Cluster(graph[randomNumber]);
         }
     }
 
     private void fillClusterWithNodes(GraphNode[] graph) {
         float dist;
-        List<GraphNode> tempList;
+        List<GraphNode> tempNodeList;
+        List<Integer> tempIndexList;
         for (int j = 0; j< clusterCount; j++) {
-            tempList = new ArrayList<>();
+            tempNodeList = new ArrayList<>();
+            tempIndexList = new ArrayList<>();
 
             for(int i = 0; i< graph.length; i++){
                 dist = Mapper.calcDistance(clusters[j].getCenter().getPosition(), graph[i].getPosition());
                 if(dist < clusterRadius){
-                    tempList.add(graph[i]);
+                    tempNodeList.add(graph[i]);
+                    tempIndexList.add(i);
                 }
             }
-            GraphNode[] array = tempList.toArray(new GraphNode[0]);
-            clusters[j].setNodes(array);
+            GraphNode[] nodes = tempNodeList.toArray(new GraphNode[0]);
+            int[] indexes = tempIndexList.stream()
+                    .mapToInt(Integer::intValue)
+                    .toArray();
+            clusters[j].setNodesMap(indexes, nodes);
         }
     }
 
@@ -49,16 +62,19 @@ public class ClusterController {
         if(clusters[0] == null)
             return;
 
+        updateNodeColors();
+
         int myNodes = 0;
         int enemyNodes = 0;
         int neutralNodes = 0;
         int tempOwner;
 
         for(int i = 0; i< clusterCount; i++){
-            for(int j=0; j<clusters[i].getNodes().length; j++){
 
+            HashMap<Integer, GraphNode> map = clusters[i].getNodesMap();
+            for (HashMap.Entry<Integer, GraphNode> entry : map.entrySet()) {
                 //gucken, wem die node gehört
-                tempOwner = clusters[i].getNodes()[j].getOwner();
+                tempOwner = entry.getValue().getOwner();
                 if(tempOwner == myNumber){
                     myNodes += 1;
                 }
@@ -67,17 +83,29 @@ public class ClusterController {
                 }
                 else
                     enemyNodes += 1;
-
             }
 //          der Spieler mit den meisten nodes im cluster bekommt die cluster zugeschrieben
+            neutralNodes /=4;
             setClusterOwnership(myNodes, enemyNodes, neutralNodes, i);
         }
 
 //        for (Cluster c :
 //                clusters) {
-//            System.out.println(c.getOwnership());
+//            System.out.println(c.getOwnership() + ", size: " +c.getNodesMap().size());
 //        }
 //        System.out.println("--------------");
+    }
+
+    private void updateNodeColors() {
+
+        for(int i=0; i<clusterCount; i++){
+            HashMap<Integer, GraphNode> map = clusters[i].getNodesMap();
+
+            for (HashMap.Entry<Integer, GraphNode> entry : map.entrySet()) {
+                GraphNode tempNode = Mapper.graph[entry.getKey()];
+                entry.getValue().ownership = tempNode.ownership;
+            }
+        }
     }
 
     private void setClusterOwnership(int myNodes, int enemyNodes, int neutralNodes, int i) {
