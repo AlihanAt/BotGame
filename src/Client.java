@@ -4,6 +4,7 @@ import lenz.htw.coshnost.world.GraphNode;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class Client implements Runnable {
 
@@ -21,8 +22,6 @@ public class Client implements Runnable {
     float yMin = 0, yMax = 0;
     float zMin = 0, zMax = 0;
 
-    BufferedWriter writer;
-
     @Override
     public void run() {
         try {
@@ -33,10 +32,12 @@ public class Client implements Runnable {
     }
 
     private void start() throws IOException {
-        writer =  new BufferedWriter(new FileWriter("test.txt"));
+
 
         client = new NetworkClient("localhost", "Teamname", "Fuer Fortnite");
+
         Mapper.graph = client.getGraph();
+        Mapper.fillNodesMap();
         clusterController.startClustering();
         myNumber = client.getMyPlayerNumber();
 
@@ -50,14 +51,17 @@ public class Client implements Runnable {
             Mapper.calcStartNode(gestreift);
 
             while (true) {
-
                 float[] dir0 = client.getBotDirection(0);
                 float[] dir1 = client.getBotDirection(1);
                 client.changeMoveDirection(0, -dir0[0], -dir0[1], -dir0[2]);
                 client.changeMoveDirection(1, -dir1[0], -dir1[1], -dir1[2]);
 
-                Mapper.getNewTargetNode(gestreift, myNumber);
+                Mapper.setNewTargetNode(gestreift, myNumber);
+                gestreift.setNewRouteTarget();
                 changeMoveDirection(gestreift);
+                gestreift.setPosition(client.getBotPosition(myNumber, 2));
+                Mapper.checkIfArrivedAtRouteTarget(gestreift);
+
                 if(counter >= 10000000) {
                     Mapper.graph = client.getGraph();
                     clusterController.updateClusters(myNumber);
