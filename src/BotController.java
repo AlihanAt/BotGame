@@ -13,7 +13,7 @@ public class BotController {
     private boolean arrivedAtTarget = true;
     private boolean arrivedAtRouteTarget = true;
 
-    private int x=0,y=0,z=0;
+    private float x=0,y=0,z=0;
 
     public BotController(int botNumber){
         this.botNumber = botNumber;
@@ -33,10 +33,15 @@ public class BotController {
         }
     }
 
-    public int[] updateMoveDirection(){
+    public float[] updateMoveDirection(){
 
         if(route == null)
-            return new int[]{0,0,0};
+            return new float[]{0,0,0};
+
+        //So ist es buggy?
+//        x = nextRouteNode.x - position[0];
+//        y = nextRouteNode.y - position[1];
+//        z = nextRouteNode.z - position[2];
 
         if (position[0] <= nextRouteNode.x) {
             x=1;
@@ -56,7 +61,7 @@ public class BotController {
             z=-1;
         }
 
-        return new int[]{x,y,z};
+        return new float[]{x,y,z};
     }
 
     public float[] getPosition() {
@@ -64,7 +69,6 @@ public class BotController {
     }
 
     public void setPosition(float[] position) {
-//        System.out.println("Position Set");
         this.position = position;
     }
 

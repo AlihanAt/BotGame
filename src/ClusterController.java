@@ -14,7 +14,6 @@ public class ClusterController {
 
     public void startClustering(){
         GraphNode[] graph = Mapper.graph;
-
         pickRandomNodesAsCluster(graph);
         fillClusterWithNodes(graph);
     }
@@ -25,7 +24,7 @@ public class ClusterController {
         for(int i = 0; i< clusterCount; i++) {
             int randomNumber = r.nextInt(graph.length);
             if(graph[randomNumber].isBlocked())
-                if(randomNumber==clusterCount)
+                if(randomNumber == clusterCount)
                     randomNumber -= 1;
                 else
                     randomNumber += 1;
@@ -57,7 +56,6 @@ public class ClusterController {
         }
     }
 
-    //geht besser...
     public void updateClusters(int myNumber){
         if(clusters[0] == null)
             return;
@@ -89,11 +87,6 @@ public class ClusterController {
             setClusterOwnership(myNodes, enemyNodes, neutralNodes, i);
         }
 
-//        for (Cluster c :
-//                clusters) {
-//            System.out.println(c.getOwnership() + ", size: " +c.getNodesMap().size());
-//        }
-//        System.out.println("--------------");
     }
 
     private void updateNodeColors() {
@@ -115,6 +108,10 @@ public class ClusterController {
             clusters[i].setOwnership(1);
         else
             clusters[i].setOwnership(-1);
+    }
+
+    public Cluster[] getClusters(){
+        return clusters;
     }
 
 }

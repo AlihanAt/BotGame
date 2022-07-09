@@ -1,7 +1,6 @@
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AStarNode implements Comparable<AStarNode> {
@@ -11,17 +10,12 @@ public class AStarNode implements Comparable<AStarNode> {
     List<Edge> neighbors;
     public AStarNode parent = null;
 
-    private static int idCounter = 0;
-    public int id;
-
     float f = Float.MAX_VALUE;
     float g = Float.MAX_VALUE;
     float h;
 
     AStarNode(GraphNode node, int graphIndex){
-        this.id = idCounter++;
         this.neighbors = new ArrayList<>();
-
         this.node = node;
         this.graphIndex = graphIndex;
     }
@@ -59,7 +53,6 @@ public class AStarNode implements Comparable<AStarNode> {
             starNode.setHeuristic(starNode.calculateHeuristic(target));
 
             this.addBranch(Mapper.calcDistance(node.getPosition(), starNode.node.getPosition()), starNode);
-
         }
     }
 

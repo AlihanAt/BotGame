@@ -7,23 +7,18 @@ import java.util.PriorityQueue;
 
 //https://stackabuse.com/graphs-in-java-a-star-algorithm/
 public class Pathfinder {
-    /*
-    g: der wert, den man für den weg aktuellen weg berechnet hat von start bis n
-    h: heuristik, der weg von einem knoten n zum ziel, ist geschätzt
-    f: beides zusammen addiert
-     */
 
-    public static List<AStarNode> aStar(GraphNode startNode, GraphNode targetNode){
+    public static List<AStarNode> aStar(GraphNode startNode, GraphNode targetNode, int botNr){
 
         AStarNode start = new AStarNode(startNode, Mapper.getNodeIndex(startNode));
         AStarNode target = new AStarNode(targetNode, Mapper.getNodeIndex(targetNode));
-        start.setHeuristic(start.calculateHeuristic(target));
+        start.setHeuristic(start.calculateHeuristic(target) + getAdditionalHeuristics(start, botNr));
         target.setHeuristic(0);
 
         PriorityQueue<AStarNode> closedList = new PriorityQueue<>();
         PriorityQueue<AStarNode> openList = new PriorityQueue<>();
 
-        start.f = start.g + start.calculateHeuristic(target);
+        start.f = start.g + start.calculateHeuristic(target) + getAdditionalHeuristics(start, botNr);
         openList.add(start);
 
         while (!openList.isEmpty()){
@@ -42,13 +37,13 @@ public class Pathfinder {
                 if(!openList.contains(nextNode) && !closedList.contains(nextNode)) {
                     nextNode.parent = currentNode;
                     nextNode.g = totalWeight;
-                    nextNode.f = nextNode.g + nextNode.calculateHeuristic(target);
+                    nextNode.f = nextNode.g + nextNode.calculateHeuristic(target) + getAdditionalHeuristics(nextNode, botNr);
                     openList.add(nextNode);
                 }else{
                     if(totalWeight < nextNode.g){
                         nextNode.parent = currentNode;
                         nextNode.g = totalWeight;
-                        nextNode.f = nextNode.calculateHeuristic(target);
+                        nextNode.f = nextNode.g + nextNode.calculateHeuristic(target) + getAdditionalHeuristics(nextNode, botNr);
 
                         if(closedList.contains(nextNode)){
                             closedList.remove(nextNode);
@@ -74,6 +69,13 @@ public class Pathfinder {
         route.add(n);
         Collections.reverse(route);
         return route;
+    }
+
+    private static float getAdditionalHeuristics(AStarNode node, int botNr){
+        if(botNr == 2)
+            return Mapper.getOwnColorHeuristicValueFrom(node);
+        else
+            return Mapper.getTrenchHeuristicValueFrom(node);
     }
 
 }

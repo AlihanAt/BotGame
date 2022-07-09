@@ -41,13 +41,13 @@ public class Cluster {
         return nodesMap;
     }
 
-//    public boolean isEmpty(){
-//        if(center == null)
-//            return true;
-//
-//        if(nodes == null)
-//            return true;
-//
-//        return false;
-//    }
+    public boolean equals(Object obj){
+        if (obj instanceof Cluster) {
+            Cluster obj1 = (Cluster)obj;
+            return this.center.x == obj1.center.x && this.center.y == obj1.center.y && this.center.z == obj1.center.z;
+        } else {
+            return false;
+        }
+    }
+
 }
