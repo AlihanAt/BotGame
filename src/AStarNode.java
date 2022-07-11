@@ -20,23 +20,8 @@ public class AStarNode implements Comparable<AStarNode> {
         this.graphIndex = graphIndex;
     }
 
-    @Override
-    public int compareTo(AStarNode n) {
-        return Float.compare(this.f, n.f);
-    }
-
-    public boolean equals(Object obj){
-        if (obj instanceof AStarNode) {
-            AStarNode obj1 = (AStarNode)obj;
-            return this.node.x == obj1.node.x && this.node.y == obj1.node.y && this.node.z == obj1.node.z;
-        } else {
-            return false;
-        }
-    }
-
     public float calculateHeuristic(AStarNode target){
-        float h = Mapper.calcDistance(node.getPosition(), target.node.getPosition());
-        return h;
+        return Mapper.calcDistance(node.getPosition(), target.node.getPosition());
     }
 
     public void setHeuristic(float h){
@@ -59,6 +44,20 @@ public class AStarNode implements Comparable<AStarNode> {
     private void addBranch(float weight, AStarNode node){
         Edge newEdge = new Edge(weight, node);
         neighbors.add(newEdge);
+    }
+
+    @Override
+    public int compareTo(AStarNode n) {
+        return Float.compare(this.f, n.f);
+    }
+
+    public boolean equals(Object obj){
+        if (obj instanceof AStarNode) {
+            AStarNode obj1 = (AStarNode)obj;
+            return this.node.x == obj1.node.x && this.node.y == obj1.node.y && this.node.z == obj1.node.z;
+        } else {
+            return false;
+        }
     }
 
     public static class Edge {

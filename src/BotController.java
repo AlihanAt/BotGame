@@ -4,7 +4,7 @@ import java.util.List;
 
 public class BotController {
 
-    private int botNumber;
+    private final int botNumber;
     private float[] position;
     private GraphNode currentNode;
     private GraphNode targetNode;
@@ -19,7 +19,64 @@ public class BotController {
         this.botNumber = botNumber;
     }
 
-    public void setNewRouteTarget() {
+    public void initializeBot(float[] pos){
+        position = pos;
+        currentNode = Mapper.calcClosestNode(pos);
+    }
+
+    //not working
+    public void checkIfBotIsStuck(float[] pos){
+
+        if (posIsSame(pos)){
+            System.out.println("Bot is stuck");
+            currentNode = Mapper.calcClosestNode(position);
+            arrivedAtRouteTarget = true;
+            arrivedAtTarget = true;
+        }
+    }
+
+    private boolean posIsSame(float[] pos) {
+        if(position[0] == pos[0] && position[1] == pos[1] && position[2] == pos[2])
+            return true;
+
+        return false;
+    }
+
+    public void checkIfArrivedAtRouteTarget(){
+        if(route == null || position == null)
+            return;
+
+        if(Mapper.calcIfArrivedAtTarget(position, nextRouteNode.getPosition())){
+            arrivedAtRouteTarget = true;
+            currentNode = Mapper.calcClosestNode(position);
+        }
+    }
+
+    public void checkIfArrivedAtTarget(){
+        if(targetNode == null || position == null)
+            return;
+
+        if(Mapper.calcIfArrivedAtTarget(position, targetNode.getPosition())){
+            arrivedAtTarget = true;
+            currentNode = Mapper.calcClosestNode(position);
+        }
+    }
+
+    public void setNewTarget(ClusterController clusterController){
+        setNewTargetNode(clusterController);
+        setNewRouteTargetNode();
+    }
+
+    private void setNewTargetNode(ClusterController clusterController){
+        if(!arrivedAtTarget)
+            return;
+
+        targetNode = Mapper.calcNewTargetNode(this, clusterController);
+        arrivedAtTarget = false;
+        route = Pathfinder.aStar(currentNode, targetNode, botNumber);
+    }
+
+    private void setNewRouteTargetNode() {
         if (route == null)
             return;
 
@@ -76,51 +133,11 @@ public class BotController {
         return currentNode;
     }
 
-    public void setCurrentNode(GraphNode node){
-        this.currentNode = node;
-    }
-
     public GraphNode getTargetNode() {
         return targetNode;
     }
 
-    public void setTargetNode(GraphNode targetNode) {
-        this.targetNode = targetNode;
-    }
-
     public int getBotNumber() {
         return botNumber;
-    }
-
-    public boolean isArrivedAtTarget() {
-        return arrivedAtTarget;
-    }
-
-    public void setArrivedAtTarget(boolean arrivedAtTarget) {
-        this.arrivedAtTarget = arrivedAtTarget;
-    }
-
-    public boolean isArrivedAtRouteTarget() {
-        return arrivedAtRouteTarget;
-    }
-
-    public void setArrivedAtRouteTarget(boolean arrived) {
-        this.arrivedAtRouteTarget = arrived;
-    }
-
-    public GraphNode getNextRouteNode() {
-        return nextRouteNode;
-    }
-
-    public void setNextRouteNode(GraphNode nextRouteNode) {
-        this.nextRouteNode = nextRouteNode;
-    }
-
-    public List<AStarNode> getRoute() {
-        return route;
-    }
-
-    public void setRoute(List<AStarNode> route) {
-        this.route = route;
     }
 }

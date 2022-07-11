@@ -50,12 +50,9 @@ public class Client implements Runnable {
     }
 
     private void doOwnTurn() {
-        einfarbig.setPosition(client.getBotPosition(myNumber, 0));
-        gepunktet.setPosition(client.getBotPosition(myNumber, 1));
-        gestreift.setPosition(client.getBotPosition(myNumber, 2));
-        Mapper.setClosestNode(einfarbig);
-        Mapper.setClosestNode(gepunktet);
-        Mapper.setClosestNode(gestreift);
+        einfarbig.initializeBot(client.getBotPosition(myNumber, 0));
+        gepunktet.initializeBot(client.getBotPosition(myNumber, 1));
+        gestreift.initializeBot(client.getBotPosition(myNumber, 2));
 
         while (true) {
             MoveBot(einfarbig, 0);
@@ -65,16 +62,15 @@ public class Client implements Runnable {
     }
 
     private void MoveBot(BotController botToMove, int botNr) {
-        Mapper.setNewTargetNode(botToMove, myNumber, clusterController);
-        botToMove.setNewRouteTarget();
-        changeMoveDirection(botToMove);
+        botToMove.setNewTarget(clusterController);
         botToMove.setPosition(client.getBotPosition(myNumber, botNr));
-        Mapper.checkIfArrivedAtRouteTarget(botToMove);
+        botToMove.checkIfArrivedAtRouteTarget();
+        changeMoveDirection(botToMove);
 
         if(counter >= 10000000) {
             Mapper.graph = client.getGraph();
             clusterController.updateClusters(myNumber);
-            Mapper.checkIfArrivedAtTarget(botToMove);
+            botToMove.checkIfArrivedAtTarget();
             counter = 0;
         }
         counter += 1;
@@ -94,7 +90,7 @@ public class Client implements Runnable {
 
     private void changeMoveDirection(BotController bot) {
         float[] dir = bot.updateMoveDirection();
-        client.changeMoveDirection(bot.getBotNumber(), (float)dir[0], (float) dir[1], (float) dir[2]);
+        client.changeMoveDirection(bot.getBotNumber(), dir[0], dir[1], dir[2]);
     }
 
 }

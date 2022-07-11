@@ -73,9 +73,9 @@ public class Pathfinder {
 
     private static float getAdditionalHeuristics(AStarNode node, int botNr){
         if(botNr == 2)
-            return Mapper.getOwnColorHeuristicValueFrom(node);
+            return Heuristic.getOwnColorHeuristicValueFrom(node);
         else
-            return Mapper.getTrenchHeuristicValueFrom(node);
+            return Heuristic.getTrenchHeuristicValueFrom(node);
     }
 
 }

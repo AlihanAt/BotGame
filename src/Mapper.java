@@ -1,7 +1,6 @@
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.Hashtable;
-import java.util.List;
 
 public class Mapper {
 
@@ -9,7 +8,7 @@ public class Mapper {
     public static GraphNode[] graph;
     public static Hashtable<GraphNode, Integer> nodesMap = new Hashtable<>();;
 
-    private static final float vertexRange = 0.05f;
+    private static final float vertexRange = 0.055f;
 
     public static void fillNodesMap(){
         if(graph==null)
@@ -28,25 +27,23 @@ public class Mapper {
         return (float) Math.sqrt(Math.pow(pos1[0]-pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2) + Math.pow(pos1[2] - pos2[2],2));
     }
 
-    public static void setClosestNode(BotController bot){
+    public static GraphNode calcClosestNode(float[] pos){
         int index = 0;
         float distance = 1;
         float tempDistance = 1;
 
         for(int i = 0; i<graph.length; i++){
-            tempDistance = calcDistance(bot.getPosition(), graph[i].getPosition());
+            tempDistance = calcDistance(pos, graph[i].getPosition());
             if(tempDistance < distance) {
                 distance = tempDistance;
                 index = i;
             }
         }
 
-        bot.setCurrentNode(graph[index]);
+        return graph[index];
     }
 
-    public static void setNewTargetNode(BotController bot, int myNumber, ClusterController clusterController) {
-        if(!bot.isArrivedAtTarget())
-            return;
+    public static GraphNode calcNewTargetNode(BotController bot, ClusterController clusterController) {
 
         Cluster[] clusters = clusterController.getClusters();
         Cluster targetCluster = clusters[0];
@@ -66,51 +63,12 @@ public class Mapper {
             }
         }
 
-        bot.setTargetNode(targetCluster.getCenter());
-        bot.setArrivedAtTarget(false);
-
-        List<AStarNode> route = Pathfinder.aStar(bot.getCurrentNode(), bot.getTargetNode(), bot.getBotNumber());
-        bot.setRoute(route);
+        return targetCluster.getCenter();
     }
 
-    public static void checkIfArrivedAtTarget(BotController bot){
-        if(bot.getTargetNode() == null || bot.getPosition() == null)
-            return;
-
-        float dist = calcDistance(bot.getPosition(), bot.getTargetNode().getPosition());
-        if(dist <= vertexRange){
-            bot.setArrivedAtTarget(true);
-            setClosestNode(bot);
-        }
-    }
-
-
-    public static void checkIfArrivedAtRouteTarget(BotController bot) {
-        if(bot.getRoute() == null || bot.getPosition() == null)
-            return;
-
-        float dist = calcDistance(bot.getPosition(), bot.getNextRouteNode().getPosition());
-        if(dist <= vertexRange){
-            bot.setArrivedAtRouteTarget(true);
-            bot.setPosition(bot.getNextRouteNode().getPosition());
-            setClosestNode(bot);
-        }
-    }
-
-    public static float getOwnColorHeuristicValueFrom(AStarNode a) {
-
-        if(a.node.getOwner() == myNumber || a.node.getOwner() == -1){
-            return 10000;
-        }
-        return 0;
-    }
-
-    public static float getTrenchHeuristicValueFrom(AStarNode a) {
-
-        if(a.node.isBlocked()){
-            return 10000000;
-        }
-        return 0;
+    public static boolean calcIfArrivedAtTarget(float[] pos, float[] targetPos){
+        float dist = calcDistance(pos, targetPos);
+        return dist <= vertexRange;
     }
 
 }
