@@ -1,3 +1,6 @@
+package Cluster;
+
+import Game.Mapper;
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.ArrayList;
@@ -9,8 +12,8 @@ public class ClusterController {
 
     private final float clusterRadius = 0.30f;
     public static float clusterDistance = 0.50f;
-    private final float clusterCount = 40;
-    private final Cluster[] clusters = new Cluster[(int) clusterCount];
+    private final int clusterCount = 40;
+    private final Cluster[] clusters = new Cluster[clusterCount];
 
     public void startClustering(){
         GraphNode[] graph = Mapper.graph;
@@ -83,7 +86,7 @@ public class ClusterController {
                     enemyNodes += 1;
             }
 //          der Spieler mit den meisten nodes im cluster bekommt die cluster zugeschrieben
-            neutralNodes /=4;
+            neutralNodes /= 4;
             setClusterOwnership(myNodes, enemyNodes, neutralNodes, i);
         }
 

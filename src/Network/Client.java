@@ -1,3 +1,8 @@
+package Network;
+
+import Cluster.ClusterController;
+import Game.BotController;
+import Game.Mapper;
 import lenz.htw.coshnost.net.NetworkClient;
 
 import java.io.IOException;
@@ -9,7 +14,7 @@ public class Client implements Runnable {
     private BotController einfarbig;
     private BotController gepunktet;
     private BotController gestreift;
-    private ClusterController clusterController = new ClusterController();
+    private final ClusterController clusterController = new ClusterController();
 
     public int myNumber;
     private int counter = 0;

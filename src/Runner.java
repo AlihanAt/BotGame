@@ -1,3 +1,4 @@
+import Network.Client;
 import lenz.htw.coshnost.Server;
 
 public class Runner {

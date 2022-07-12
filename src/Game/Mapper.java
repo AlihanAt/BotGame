@@ -1,3 +1,7 @@
+package Game;
+
+import Cluster.Cluster;
+import Cluster.ClusterController;
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.Hashtable;

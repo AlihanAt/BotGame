@@ -1,3 +1,7 @@
+package Game;
+
+import Cluster.ClusterController;
+import Pathfinding.Pathfinder;
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.List;
@@ -9,7 +13,7 @@ public class BotController {
     private GraphNode currentNode;
     private GraphNode targetNode;
     private GraphNode nextRouteNode;
-    private List<AStarNode> route;
+    private List<GraphNode> route;
     private boolean arrivedAtTarget = true;
     private boolean arrivedAtRouteTarget = true;
 
@@ -84,7 +88,7 @@ public class BotController {
             return;
 
         if(route.size() >= 1) {
-            nextRouteNode = route.get(0).node;
+            nextRouteNode = route.get(0);
             arrivedAtRouteTarget = false;
             route.remove(0);
         }

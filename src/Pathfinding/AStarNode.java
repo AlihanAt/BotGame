@@ -1,3 +1,6 @@
+package Pathfinding;
+
+import Game.Mapper;
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.ArrayList;
@@ -5,7 +8,7 @@ import java.util.List;
 
 public class AStarNode implements Comparable<AStarNode> {
 
-    GraphNode node;
+    private final GraphNode node;
     int graphIndex;
     List<Edge> neighbors;
     public AStarNode parent = null;
@@ -44,6 +47,10 @@ public class AStarNode implements Comparable<AStarNode> {
     private void addBranch(float weight, AStarNode node){
         Edge newEdge = new Edge(weight, node);
         neighbors.add(newEdge);
+    }
+
+    public GraphNode getNode() {
+        return node;
     }
 
     @Override

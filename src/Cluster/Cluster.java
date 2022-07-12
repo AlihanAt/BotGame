@@ -1,3 +1,5 @@
+package Cluster;
+
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.HashMap;
@@ -5,8 +7,8 @@ import java.util.HashMap;
 
 public class Cluster {
 
-    private GraphNode center;
-    private HashMap<Integer, GraphNode> nodesMap = new HashMap<>();
+    private final GraphNode center;
+    private final HashMap<Integer, GraphNode> nodesMap = new HashMap<>();
 
     //-1: none, 0: mine, 1: enemies
     private int ownership = -1;
@@ -17,10 +19,6 @@ public class Cluster {
 
     public GraphNode getCenter() {
         return center;
-    }
-
-    public void setCenter(GraphNode center) {
-        this.center = center;
     }
 
     public int getOwnership() {

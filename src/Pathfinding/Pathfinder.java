@@ -1,3 +1,6 @@
+package Pathfinding;
+
+import Game.Mapper;
 import lenz.htw.coshnost.world.GraphNode;
 
 import java.util.ArrayList;
@@ -8,7 +11,7 @@ import java.util.PriorityQueue;
 //https://stackabuse.com/graphs-in-java-a-star-algorithm/
 public class Pathfinder {
 
-    public static List<AStarNode> aStar(GraphNode startNode, GraphNode targetNode, int botNr){
+    public static List<GraphNode> aStar(GraphNode startNode, GraphNode targetNode, int botNr){
 
         AStarNode start = new AStarNode(startNode, Mapper.getNodeIndex(startNode));
         AStarNode target = new AStarNode(targetNode, Mapper.getNodeIndex(targetNode));
@@ -27,7 +30,7 @@ public class Pathfinder {
                 return createRouteList(currentNode);
             }
 
-            int indexInGraph = Mapper.getNodeIndex(currentNode.node);
+            int indexInGraph = Mapper.getNodeIndex(currentNode.getNode());
             currentNode.setNeighbors(Mapper.graph[indexInGraph].getNeighbors(), target);
 
             for(AStarNode.Edge edge : currentNode.neighbors){
@@ -58,15 +61,15 @@ public class Pathfinder {
         return null;
     }
 
-    private static List<AStarNode> createRouteList(AStarNode node){
+    private static List<GraphNode> createRouteList(AStarNode node){
         AStarNode n = node;
-        List<AStarNode> route = new ArrayList<>();
+        List<GraphNode> route = new ArrayList<>();
 
         while(n.parent != null){
-            route.add(n);
+            route.add(n.getNode());
             n = n.parent;
         }
-        route.add(n);
+        route.add(n.getNode());
         Collections.reverse(route);
         return route;
     }
